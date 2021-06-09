@@ -1,6 +1,6 @@
 {
   "name": "mdx-variables",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A package for reading variables from .mdx files",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -17,6 +17,16 @@
   },
   "author": "Forward Digital Ltd",
   "license": "ISC",
+  "keywords": [
+    "mdx",
+    "markdown",
+    "react",
+    "jsx",
+    "tsx",
+    "nextjs",
+    "remark",
+    "babel"
+  ],
   "devDependencies": {
     "@types/node": "^15.12.2",
     "typescript": "^4.3.2"

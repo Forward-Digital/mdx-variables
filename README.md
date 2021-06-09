@@ -42,27 +42,37 @@ I can create my markdown file here using the metadata variable we defined.
 import * as React from "react";
 import { ReadVarFromMDX } from "mdx-variables";
 
+type MDXTypes = {
+    tags: Array<string>;
+    author: string;
+    date: Date;
+}
+
 const BlogIndex: React.FC = ({ children }): JSX.Element => {
-    let meta;
+    const [meta, setMeta] = React.useState<MDXTypes>();
+    const [metaFromFile, setMetaFromFile] = React.useState<MDXTypes>();
     
     React.useEffect(() => {
-        meta = ReadVarFromMDX('metadata', 'pages', 'my-page.mdx'); // This example uses a string value of the filename as the source
-        
-        const source: Buffer = fs.readFileSync('C:/mdx-example/pages/my-page.mdx'); // This example uses an .mdx file buffer as the source
-        meta = ReadVarFromMDX('metadata', 'pages', source);
-    });
+        // This example uses a string value of the filename as the source
+        const meta = ReadVarFromMDX<MDXTypes>('metadata', 'pages', 'my-page.mdx');
+        setMeta(meta);
+
+        // This example uses an .mdx file buffer as the source
+        const source: Buffer = fs.readFileSync('C:/mdx-example/pages/my-page.mdx');
+        const metaFile = ReadVarFromMDX<MDXTypes>('metadata', 'pages', source);
+        setMetaFromFile(metaFile);
+    }, []);
     
     return (
         <>
             <TagsComponent tags={meta?.tags} />
             <div>
-                {children}    
+                {children}
             </div>
-            <div>{meta?.author} - {meta?.date}</div>
+            <div>{metaFile?.author} - {metaFile?.date}</div>
         </>
     );
 };
-
 export default BlogIndex;
 
 ```
