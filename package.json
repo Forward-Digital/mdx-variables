@@ -1,12 +1,19 @@
 {
   "name": "mdx-variables",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A package for reading variables from .mdx files",
-  "main": "index.js",
-  "files": ["lib/**/*"],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "build": "tsc",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Forward-Digital/mdx-variables.git"
   },
   "author": "Forward Digital Ltd",
   "license": "ISC",

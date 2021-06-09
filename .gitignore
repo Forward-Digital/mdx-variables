@@ -122,3 +122,4 @@ dist
 
 # Compiled code
 /lib
+/dist
