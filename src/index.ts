@@ -13,35 +13,16 @@ import {VFile} from "vfile";
  * @constructor
  */
 export function ReadVarFromMDX<T>(varName: string, mdxFilePath: string, source: Buffer | string): T {
-    let file: Buffer;
-    const fullFileDirectoryPath: string = path.join(process.cwd(), mdxFilePath);
-    if(source instanceof Buffer) {
-        file = source;
-    } else {
-        if(!/\.mdx?$/.test(source)) throw new Error('source must be an MDX file path or MDX file buffer');
-        const fullFilePath: string = path.join(fullFileDirectoryPath, source);
-        file = fs.readFileSync(fullFilePath);
-    }
-
+    const file: Buffer = source instanceof Buffer ? source : ReadFile(source, mdxFilePath);
     const mdxAsVFile: VFile = remark().use(remarkMdx.default).processSync(file);
     const reactCompVFile: any = remark().use(remarkReact.default).processSync(mdxAsVFile.contents);
 
     if(reactCompVFile?.result?.props?.children) {
-        const matches = [];
-        for(const childComp of reactCompVFile.result.props.children) {
-            if(childComp?.props?.children) {
-                for(const child of childComp.props.children) {
-                    if(typeof child === 'string') {
-                        if(child?.includes(`const ${varName} = {`) || child?.includes(`let ${varName} = {`)) {
-                            if(child.indexOf('export') === 0) matches.push(child.substring(7));
-                            else matches.push(child);
-                        }
-                    }
-                }
-            }
-        }
+        const matches = reactCompVFile.result.props.children
+            .reduce((acc, curr) => acc.concat(ChildReducer(curr, varName)), []);
+
         if(matches.length > 0) {
-            var variableData;
+            let variableData;
             const matchSingleLine: string = matches[0];
             const equalsPos: number = matchSingleLine.indexOf('=');
             const objString = matchSingleLine.substring(equalsPos+1);
@@ -52,6 +33,44 @@ export function ReadVarFromMDX<T>(varName: string, mdxFilePath: string, source: 
     }
 
     return null;
+}
+
+/**
+ * Check if the child is a component with children or a string, if its a component then pass in that components children
+ * @param child
+ * @param varName
+ * @constructor
+ */
+function ChildReducer(child: any, varName: string): Array<string> {
+    const item = typeof child === 'string' ? child : child?.props?.children
+    return IncludesVariableDefinition(item, varName);
+}
+
+/**
+ * Get the file buffer for an mdx file at the path supplied
+ * @param filename
+ * @param mdxFilePath
+ * @constructor
+ */
+function ReadFile(filename: string, mdxFilePath: string): Buffer {
+    const fullFileDirectoryPath: string = path.join(process.cwd(), mdxFilePath);
+    if(!/\.mdx?$/.test(filename)) throw new Error('source must be an MDX file path or MDX file buffer');
+    const fullFilePath: string = path.join(fullFileDirectoryPath, filename);
+    return fs.readFileSync(fullFilePath);
+}
+
+/**
+ * Check if the passed in component or array of components contains the variable, if matches are found return them
+ * @param component
+ * @param varName
+ * @constructor
+ */
+function IncludesVariableDefinition(component: any | Array<any> | null, varName: string): Array<string> {
+    if(component === null) return [];
+    const children: Array<any> = typeof component === 'string' ? [component] : component;
+    return children
+        .filter(c => typeof c === 'string' && (c?.includes(`const ${varName} = {`) || c?.includes(`let ${varName} = {`)))
+        .map(c => c.indexOf('export') === 0 ? c.substring(7) : c);
 }
 
 module.exports = {

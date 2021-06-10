@@ -54,12 +54,12 @@ const BlogIndex: React.FC = ({ children }): JSX.Element => {
     
     React.useEffect(() => {
         // This example uses a string value of the filename as the source
-        const meta = ReadVarFromMDX<MDXTypes>('metadata', 'pages', 'my-page.mdx');
+        const meta: MDXTypes = ReadVarFromMDX<MDXTypes>('metadata', 'pages', 'my-page.mdx');
         setMeta(meta);
 
         // This example uses an .mdx file buffer as the source
         const source: Buffer = fs.readFileSync('C:/mdx-example/pages/my-page.mdx');
-        const metaFile = ReadVarFromMDX<MDXTypes>('metadata', 'pages', source);
+        const metaFile: MDXTypes = ReadVarFromMDX<MDXTypes>('metadata', 'pages', source);
         setMetaFromFile(metaFile);
     }, []);
     
