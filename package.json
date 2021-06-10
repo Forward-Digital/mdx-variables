@@ -1,6 +1,6 @@
 {
   "name": "mdx-variables",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A package for reading variables from .mdx files",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
